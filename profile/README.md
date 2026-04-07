@@ -74,7 +74,7 @@ Tất cả Response phải tuân thủ cấu trúc:
     - Folder: Sử dụng **`kebab-case`** (Ví dụ: `iam-service`).
     - File: Sử dụng **`snake_case`** (Ví dụ: `auth_handler.go`).
 * **Git Branching:** Tuân thủ cấu trúc `type/description` (Sử dụng kebab-case):
-    - `feature/<nam_name>/<#id-github>_`: Tính năng mới (Ví dụ: `feature/giang_bao_luan/#1_iam_register`).
+    - `feature/<dev_name>/<#id-github>_`: Tính năng mới (Ví dụ: `feature/giang_bao_luan/#1_iam_register`).
     - `fix/<dev_name>/<#id-github>_`: Sửa lỗi (Ví dụ: `fix/giang_bao_luan/#1_db_connection`).
     - `refactor/<dev_name>/<#id-github>_`: Tối ưu cấu trúc code (Ví dụ: `refactor/giang_bao_luan/#1_logging_service`).
     - `docs/<dev_name>/<#id-github>_`: Cập nhật tài liệu (Ví dụ: `docs/giang_bao_luan/#1_update_blueprint`).
