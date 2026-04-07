@@ -78,6 +78,7 @@ Tất cả Response phải tuân thủ cấu trúc:
     - `fix/<dev_name>/<#id-github>_`: Sửa lỗi (Ví dụ: `fix/giang_bao_luan/#1_db_connection`).
     - `refactor/<dev_name>/<#id-github>_`: Tối ưu cấu trúc code (Ví dụ: `refactor/giang_bao_luan/#1_logging_service`).
     - `docs/<dev_name>/<#id-github>_`: Cập nhật tài liệu (Ví dụ: `docs/giang_bao_luan/#1_update_blueprint`).
+    - `chore/`: Cấu hình, thư viện, việc vặt (Ví dụ: `chore/giang_bao_luan/#2_setup_husky`).
 
 ---
 
