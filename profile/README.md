@@ -9,7 +9,7 @@ This is the central documentation for the Mini-AWS Cloud Service project.
 - [Console UI](https://github.com/vertex-r2h/v-r2h-console-ui) - Next.js: Admin/User Dashboard & Web Terminal.
 - [CLI Tool](https://github.com/vertex-r2h/v-r2h-cli) - Golang: Command-line interface for system interactions.
 
-<br><br><br>
+<br><br>
 ---
 
 # PROJECT BLUEPRINT: VERTEX-R2H (MINI-AWS ECOSYSTEM)
