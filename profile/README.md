@@ -108,15 +108,20 @@ Tất cả Response phải tuân thủ cấu trúc:
 - [x] Khởi tạo cấu trúc dự án và quản lý mã nguồn (Polyrepo).
 - [x] Thiết lập Gateway với Go, Gin và GORM.
 - [x] Triển khai Container hóa hạ tầng (Postgres 15, Redis 7).
-- [x] Xây dựng hệ thống quản lý cấu hình đa môi trường (.env.development).
-- [x] Thiết lập Global Middleware cho Request Tracing (X-Trace-ID).
-- [x] Thiết kế Database Schema ban đầu cho IAM (Bảng users).
-- [x] Kết nối thành công Gateway tới Database thông qua Docker.
+- [x] Xây dựng hệ thống quản lý cấu hình đa môi trường (`.env.development`, `.env.staging`, `.env.production`).
+- [x] **[Update 08/04]** Hoàn thiện Script quản lý (`run.bat`) tối ưu cho Windows/Docker với English Documentation và Dynamic Routing.
+- [x] **[Update 08/04]** Thiết lập Docker Bridge Network (`vr2h-network`) cho phép các service giao tiếp nội bộ qua Container Name.
+- [x] **[Update 08/04]** Xử lý triệt để lỗi Timezone trên Alpine Linux (`tzdata`) và Volume Mounting trên môi trường Windows.
+- [x] Thiết lập Global Middleware cho Request Tracing (`X-Trace-ID`) và Structured Logging.
+- [x] Kết nối thành công Gateway tới Database & Redis thông qua hạ tầng Docker.
 
 ### Milestone 2: Định danh và Xác thực (IN PROGRESS)
-- [ ] Định nghĩa GORM User Model và triển khai Auto Migration.
-- [ ] Xây dựng tính năng Register (Mã hóa mật khẩu với Bcrypt).
-- [ ] Triển khai JWT Authentication (Login & Token validation).
+- [x] Xây dựng tính năng Register (Mã hóa mật khẩu với Bcrypt).
+- [x] Triển khai JWT Authentication (Generate Access/Refresh Token).
+- [x] **[Update 08/04]** Thống nhất API Convention (Global Response Structure) cho toàn bộ hệ sinh thái.
+- [x] **[Update 08/04]** Xây dựng Handler xác thực tài khoản (`VerifyAccount`) sử dụng Query Parameters.
+- [x] **[Update 08/04]** Xây dựng Handler gửi lại mã xác thực (`ResendVerify`) sử dụng Request Body JSON.
+- [ ] Chuẩn hóa bộ mã lỗi của toàn hệ thống (Sử dụng Enumeration).
 - [ ] Thiết kế Schema cho Roles và Policies (RBAC/ABAC).
 
 ### Milestone 3: Giao diện và Đa ngôn ngữ
@@ -132,5 +137,17 @@ Tất cả Response phải tuân thủ cấu trúc:
 ---
 
 ## VII. Nhật ký thay đổi (Changelog)
-- 2026-04-07: Hoàn thành kết nối Database, xử lý Log màu ANSI, thiết lập chuẩn Trace-ID.
-- 2026-04-06: Khởi tạo Project Blueprint và cấu trúc thư mục.
+- 2026-04-08: [DevOps & Authentication Flow]
+    - Tối ưu hóa `run.bat` với English documentation, sử dụng Labels và Dynamic Routing cho đa môi trường.
+    - Thiết lập `vr2h-network` (Docker Bridge) giúp giao tiếp nội bộ giữa Gateway, Postgres và Redis bảo mật hơn.
+    - Xử lý triệt để lỗi Timezone trên Alpine Linux (`tzdata`) và lỗi bind mount file `.env` trên Windows.
+    - Chuẩn hóa cấu trúc API Response Global và triển khai logic cho Handler `Register`, `Login`, `VerifyAccount` & `ResendVerify`.
+    - Hoàn thiện tích hợp mã hóa mật khẩu Bcrypt và luồng khởi tạo JWT (Access Tokens, chưa có Refresh Tokens).
+
+- 2026-04-07: [Connectivity & Observability]
+    - Kết nối thành công Gateway tới Database Postgres và Redis thông qua hạ tầng Docker.
+    - Triển khai Structured Logging với màu sắc ANSI và chuẩn hóa Request Tracing (`X-Trace-ID`).
+
+- 2026-04-06: [Architectural Setup]
+    - Khởi tạo Project Blueprint và cấu trúc thư mục Polyrepo cho hệ sinh thái VERTEX-R2H.
+    - Khởi tạo IAM Gateway Service sử dụng Go, Gin Framework và GORM.
