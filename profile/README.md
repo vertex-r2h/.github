@@ -115,17 +115,20 @@ Tất cả Response phải tuân thủ cấu trúc:
 - [x] Thiết lập Global Middleware cho Request Tracing (`X-Trace-ID`) và Structured Logging.
 - [x] Kết nối thành công Gateway tới Database & Redis thông qua hạ tầng Docker.
 
-### Milestone 2: Định danh và Xác thực (IN PROGRESS)
+### Milestone 2: Định danh và Xác thực (DONE - UPDATE 13/04)
 - [x] Xây dựng tính năng Register (Mã hóa mật khẩu với Bcrypt).
 - [x] Triển khai JWT Authentication (Generate Access/Refresh Token).
-- [x] **[Update 08/04]** Thống nhất API Convention (Global Response Structure) cho toàn bộ hệ sinh thái.
-- [x] **[Update 08/04]** Xây dựng Handler xác thực tài khoản (`VerifyAccount`) sử dụng Query Parameters.
-- [x] **[Update 08/04]** Xây dựng Handler gửi lại mã xác thực (`ResendVerify`) sử dụng Request Body JSON.
+- [ ] **[Update 13/04]** Hoàn thiện các API cho module AUTH.
+- [x] **[Update 13/04]** Hoàn thiện cơ chế **Silent Refresh** & **Refresh Token Rotation** (Xoay vòng token bảo mật).
+- [x] **[Update 13/04]** Tích hợp quản lý **Multi-Device Sessions** trên Redis (Lưu trữ JSON metadata thiết bị).
+- [x] **[Update 13/04]** Xây dựng hệ thống Interceptor phía Frontend (Next.js) tự động xử lý lỗi 401 & Request Queue.
+- [x] **[Update 13/04]** Triển khai Middleware bảo vệ route và tự động Redirect thông minh tại Gateway/Proxy.
 - [ ] Chuẩn hóa bộ mã lỗi của toàn hệ thống (Sử dụng Enumeration).
 - [ ] Thiết kế Schema cho Roles và Policies (RBAC/ABAC).
 
-### Milestone 3: Giao diện và Đa ngôn ngữ
-- [ ] Dựng Console UI với Next.js.
+### Milestone 3: Giao diện và Đa ngôn ngữ (IN PROGRESS)
+- [x] **[Update 13/04]** Dựng Console UI cơ bản với Next.js & Tailwind CSS.
+- [x] **[Update 13/04]** Xây dựng trang **Security & Sessions** (Quản lý và xóa phiên đăng nhập thiết bị).
 - [ ] Triển khai I18n Engine (Lưu Postgres, Cache Redis).
 
 ### Milestone 4: Core Engine (Rust)
@@ -137,17 +140,31 @@ Tất cả Response phải tuân thủ cấu trúc:
 ---
 
 ## VII. Nhật ký thay đổi (Changelog)
-- 2026-04-08: [DevOps & Authentication Flow]
-    - Tối ưu hóa `run.bat` với English documentation, sử dụng Labels và Dynamic Routing cho đa môi trường.
-    - Thiết lập `vr2h-network` (Docker Bridge) giúp giao tiếp nội bộ giữa Gateway, Postgres và Redis bảo mật hơn.
-    - Xử lý triệt để lỗi Timezone trên Alpine Linux (`tzdata`) và lỗi bind mount file `.env` trên Windows.
-    - Chuẩn hóa cấu trúc API Response Global và triển khai logic cho Handler `Register`, `Login`, `VerifyAccount` & `ResendVerify`.
-    - Hoàn thiện tích hợp mã hóa mật khẩu Bcrypt và luồng khởi tạo JWT (Access Tokens, chưa có Refresh Tokens).
 
-- 2026-04-07: [Connectivity & Observability]
-    - Kết nối thành công Gateway tới Database Postgres và Redis thông qua hạ tầng Docker.
-    - Triển khai Structured Logging với màu sắc ANSI và chuẩn hóa Request Tracing (`X-Trace-ID`).
+### [2026-04-13] - Security & Silent Refresh Flow
+- **Backend (Go):**
+    - Hoàn thiện các API cần thiết cho module AUTH
+    - Triển khai cơ chế **Refresh Token Rotation**: Mỗi lần cấp mới Access Token sẽ sinh ra một Refresh Token mới và vô hiệu hóa cái cũ trong Redis để chống Replay Attack.
+    - Nâng cấp logic `RefreshToken` định danh người dùng thông qua việc bóc tách `user_id` từ Expired Access Token (Stateless identification).
+    - Đồng bộ hóa dữ liệu Session dưới dạng JSON trong Redis, cho phép lưu trữ Metadata thiết bị (Device Name, IP, Last Active).
+- **Frontend (Next.js):**
+    - Hoàn thiện Axios Interceptor xử lý lỗi 401 thông qua hàng đợi (`failedQueue`), đảm bảo trải nghiệm người dùng không bị gián đoạn khi token hết hạn.
+    - Cấu hình Middleware Proxy xử lý điều hướng thông minh cho các route `/`, `/dashboard`, `/login` và `/system`.
+    - Fix lỗi React render "Unique Key Prop" trong danh sách quản lý Sessions.
+- **Git Ops:**
+    - Chuẩn hóa lịch sử commit (Merge unrelated histories) và áp dụng strict branch naming convention qua Husky: `feature/giang_bao_luan/#7_auth_module`.
 
-- 2026-04-06: [Architectural Setup]
-    - Khởi tạo Project Blueprint và cấu trúc thư mục Polyrepo cho hệ sinh thái VERTEX-R2H.
-    - Khởi tạo IAM Gateway Service sử dụng Go, Gin Framework và GORM.
+### [2026-04-08] - DevOps & Authentication Flow
+- Tối ưu hóa `run.bat` với English documentation, sử dụng Labels và Dynamic Routing cho đa môi trường.
+- Thiết lập `vr2h-network` (Docker Bridge) giúp giao tiếp nội bộ giữa Gateway, Postgres và Redis bảo mật hơn.
+- Xử lý triệt để lỗi Timezone trên Alpine Linux (`tzdata`) và lỗi bind mount file `.env` trên Windows.
+- Chuẩn hóa cấu trúc API Response Global và triển khai logic cho Handler `Register`, `Login`, `VerifyAccount` & `ResendVerify`.
+- Hoàn thiện tích hợp mã hóa mật khẩu Bcrypt và luồng khởi tạo JWT ban đầu.
+
+### [2026-04-07] - Connectivity & Observability
+- Kết nối thành công Gateway tới Database Postgres và Redis thông qua hạ tầng Docker.
+- Triển khai Structured Logging với màu sắc ANSI và chuẩn hóa Request Tracing (`X-Trace-ID`).
+
+### [2026-04-06] - Architectural Setup
+- Khởi tạo Project Blueprint và cấu trúc thư mục Polyrepo cho hệ sinh thái VERTEX-R2H.
+- Khởi tạo IAM Gateway Service sử dụng Go, Gin Framework và GORM.
