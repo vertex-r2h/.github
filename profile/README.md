@@ -2,6 +2,8 @@
 This is the central documentation for the Mini-AWS Cloud Service project.
 
 ## Quick Links
+- [System Design (Draw.io)](https://app.diagrams.net/) - Sơ đồ kiến trúc Microservices & Flow logic hệ thống.
+- [UI/UX Design (Figma)](https://www.figma.com/) - Giao diện Console UI, Admin Dashboard & Branding.
 - [API Gateway](https://github.com/vertex-r2h/v-r2h-api-gateway) - Golang: Cổng điều hướng tập trung, Reverse Proxy & Request Orchestration.
 - [IAM Service](https://github.com/vertex-r2h/v-r2h-iam-service) - Golang: Identity & Access Management, gRPC Server, RBAC Policy.
 - [I18n Service](https://github.com/vertex-r2h/v-r2h-i18n-service) - Golang: Dịch vụ đa ngôn ngữ, quản lý bản dịch & Cache Redis.
