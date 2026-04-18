@@ -2,12 +2,16 @@
 This is the central documentation for the Mini-AWS Cloud Service project.
 
 ## Quick Links
-- [IAM Gateway](https://github.com/vertex-r2h/v-r2h-iam-gateway) - Golang: Auth, RBAC Policy, Rate Limit & I18n Proxy.
-- [Infrastructure](https://github.com/vertex-r2h/v-r2h-infra) - Docker Compose: Shared DB (Postgres), Redis & Nginx Config.
+- [API Gateway](https://github.com/vertex-r2h/v-r2h-api-gateway) - Golang: Cổng điều hướng tập trung, Reverse Proxy & Request Orchestration.
+- [IAM Service](https://github.com/vertex-r2h/v-r2h-iam-service) - Golang: Identity & Access Management, gRPC Server, RBAC Policy.
+- [I18n Service](https://github.com/vertex-r2h/v-r2h-i18n-service) - Golang: Dịch vụ đa ngôn ngữ, quản lý bản dịch & Cache Redis.
+- [Proto Contracts](https://github.com/vertex-r2h/v-r2h-proto) - gRPC: Git Submodule định nghĩa Schema và Service Interfaces dùng chung.
+- [Go Library](https://github.com/vertex-r2h/v-r2h-library) - Golang: Thư viện tiện ích (v0.0.5), Middleware & Common Helpers cho Go Services.
+- [Infrastructure](https://github.com/vertex-r2h/v-r2h-infra) - Docker Compose: Isolated DB (Postgres), Multi-instance Redis & Nginx.
 - [Core Engine](https://github.com/vertex-r2h/v-r2h-core-engine) - Rust: Docker/VM Control API & Resource Monitoring.
-- [Business Backend](https://github.com/vertex-r2h/v-r2h-business-be) - Node.js (NestJS): Billing, Stripe Integration & User Profile.
-- [Console UI](https://github.com/vertex-r2h/v-r2h-console-ui) - Next.js: Admin/User Dashboard & Web Terminal.
-- [CLI Tool](https://github.com/vertex-r2h/v-r2h-cli) - Golang: Command-line interface for system interactions.
+- [Business Backend](https://github.com/vertex-r2h/v-r2h-business-be) - Node.js: Billing, Stripe Integration & User Profile.
+- [Console UI](https://github.com/vertex-r2h/v-r2h-console-ui) - Next.js: Dashboard Admin/User & Web Terminal (xterm.js).
+- [CLI Tool](https://github.com/vertex-r2h/v-r2h-cli) - Golang: Command-line interface tương tác qua Access Keys.
 
 <br><br>
 ---
@@ -15,8 +19,8 @@ This is the central documentation for the Mini-AWS Cloud Service project.
 # PROJECT BLUEPRINT: VERTEX-R2H (MINI-AWS ECOSYSTEM)
 
 > **Owner:** Giang Bảo Luân  
-> **Status:** Planning & Architecture Defined  
-> **Version:** 1.0 (Update: 2026-04-07)
+> **Status:** Development - Microservices Architecture Implementation  
+> **Version:** 1.0 (Update: 2026-04-18)
 
 ---
 
@@ -25,16 +29,20 @@ Xây dựng một hệ sinh thái Cloud Service thu nhỏ (Mini-AWS) bao gồm c
 
 ---
 
-## II. Danh sách 6 Source Code (Repositories) - Polyrepo Strategy
+## II. Danh sách Source Code (Repositories) - Polyrepo Strategy
 
 | Repository | Tech Stack | Nhiệm vụ chính (Core Responsibilities) |
 | :--- | :--- | :--- |
-| **v-r2h-iam-gateway** | **Golang** | Cổng bảo vệ: Check Auth (JWT/Key), Phân quyền Policy (RBAC/ABAC), Rate Limit, Cache I18n. |
-| **v-r2h-core-engine** | **Rust** | Động cơ: Điều khiển Docker/VM API, Quản lý File System (S3-like), Monitor tài nguyên (CPU/RAM). |
-| **v-r2h-business-be** | **Node.js (NestJS)** | Nghiệp vụ: Tính tiền (Billing), Thanh toán (Stripe), Thông báo (Mail/WSS), User Profile. |
-| **v-r2h-console-ui** | **Next.js** | Giao diện: Dashboard User/Admin, Web Terminal (xterm.js), i18n động. |
-| **v-r2h-cli** | **Golang** | Công cụ: Dòng lệnh tương tác với hệ thống qua Access Keys. |
-| **v-r2h-infra** | **Docker/Config** | Hạ tầng: Docker Compose, Nginx, Shared DB (Postgres), Redis, Logging (PLG Stack). |
+| **v-r2h-api-gateway** | **Golang** | Cổng điều hướng (Reverse Proxy): Load balancing và điều phối traffic tới các microservices qua REST/gRPC. |
+| **v-r2h-iam-service** | **Golang** | Trái tim định danh: Quản lý xác thực, gRPC server cung cấp thông tin User/Policy cho Gateway. |
+| **v-r2h-i18n-service** | **Golang** | Quản lý đa ngôn ngữ: Lưu trữ bản dịch, cung cấp gRPC interface để tra cứu nội dung I18n nhanh chóng. |
+| **v-r2h-proto** | **gRPC / Proto** | **Communication Contract**: Định nghĩa các Service RPC và Message Models (Submodule dùng chung cho Go/Rust/Node). |
+| **v-r2h-library** | **Golang** | **Internal Helper**: Thư viện tiện ích cho Go, chứa middleware, logger, và wrapper xử lý mã lỗi từ Proto. |
+| **v-r2h-core-engine** | **Rust** | Động cơ hệ thống: Kết nối gRPC client để nhận lệnh điều khiển Docker/VM API. |
+| **v-r2h-business-be** | **Node.js** | Nghiệp vụ: Quản lý Billing, Stripe và tích hợp Metadata qua gRPC tới IAM. |
+| **v-r2h-console-ui** | **Next.js** | Dashboard trung tâm: Quản trị hệ thống và Console người dùng. |
+| **v-r2h-cli** | **Golang** | Command-line Tool: Tương tác với hệ thống VERTEX qua Access Keys cho các thao tác nhanh. |
+| **v-r2h-infra** | **Docker/Config** | Hạ tầng nền tảng: Quản lý Docker Compose, Nginx Proxy, Shared DB Clusters và PLG Logging Stack. |
 
 ---
 
@@ -109,37 +117,50 @@ Tất cả Response phải tuân thủ cấu trúc:
 - [x] Thiết lập Gateway với Go, Gin và GORM.
 - [x] Triển khai Container hóa hạ tầng (Postgres 15, Redis 7).
 - [x] Xây dựng hệ thống quản lý cấu hình đa môi trường (`.env.development`, `.env.staging`, `.env.production`).
-- [x] **[Update 08/04]** Hoàn thiện Script quản lý (`run.bat`) tối ưu cho Windows/Docker với English Documentation và Dynamic Routing.
-- [x] **[Update 08/04]** Thiết lập Docker Bridge Network (`vr2h-network`) cho phép các service giao tiếp nội bộ qua Container Name.
-- [x] **[Update 08/04]** Xử lý triệt để lỗi Timezone trên Alpine Linux (`tzdata`) và Volume Mounting trên môi trường Windows.
+- [x] **[Update 08/04]** Hoàn thiện Script quản lý (`run.bat`) tối ưu cho Windows/Docker.
+- [x] **[Update 08/04]** Thiết lập Docker Bridge Network (`vr2h-network`) cho phép giao tiếp nội bộ qua Container Name.
+- [x] **[Update 08/04]** Xử lý triệt để lỗi Timezone trên Alpine Linux và Volume Mounting trên Windows (ASUS TUF).
 - [x] Thiết lập Global Middleware cho Request Tracing (`X-Trace-ID`) và Structured Logging.
 - [x] Kết nối thành công Gateway tới Database & Redis thông qua hạ tầng Docker.
 
-### Milestone 2: Định danh và Xác thực (DONE - UPDATE 13/04)
+### Milestone 2: Định danh và Phân quyền (DONE - UPDATE 18/04)
 - [x] Xây dựng tính năng Register (Mã hóa mật khẩu với Bcrypt).
 - [x] Triển khai JWT Authentication (Generate Access/Refresh Token).
-- [ ] **[Update 13/04]** Hoàn thiện các API cho module AUTH.
-- [x] **[Update 13/04]** Hoàn thiện cơ chế **Silent Refresh** & **Refresh Token Rotation** (Xoay vòng token bảo mật).
-- [x] **[Update 13/04]** Tích hợp quản lý **Multi-Device Sessions** trên Redis (Lưu trữ JSON metadata thiết bị).
-- [x] **[Update 13/04]** Xây dựng hệ thống Interceptor phía Frontend (Next.js) tự động xử lý lỗi 401 & Request Queue.
-- [x] **[Update 13/04]** Triển khai Middleware bảo vệ route và tự động Redirect thông minh tại Gateway/Proxy.
-- [ ] Chuẩn hóa bộ mã lỗi của toàn hệ thống (Sử dụng Enumeration).
-- [ ] Thiết kế Schema cho Roles và Policies (RBAC/ABAC).
+- [x] **[Update 18/04]** Hoàn thiện bộ API toàn diện cho module AUTH.
+- [x] **[Update 18/04]** Tái cấu trúc Microservices: Tách biệt hoàn toàn `iam-service` và `i18n-service`.
+- [x] **[Update 18/04]** Triển khai hạ tầng Isolated Storage: 2 instance Postgres & 2 instance Redis riêng biệt.
+- [x] **[Update 13/04]** Hoàn thiện cơ chế **Silent Refresh** & **Refresh Token Rotation**.
+- [x] **[Update 13/04]** Tích hợp quản lý **Multi-Device Sessions** trên Redis.
+- [x] **[Update 18/04]** Master Schema Design: Hợp nhất Permission và API Route Map cho RBAC Policy.
 
 ### Milestone 3: Giao diện và Đa ngôn ngữ (IN PROGRESS)
 - [x] **[Update 13/04]** Dựng Console UI cơ bản với Next.js & Tailwind CSS.
-- [x] **[Update 13/04]** Xây dựng trang **Security & Sessions** (Quản lý và xóa phiên đăng nhập thiết bị).
-- [ ] Triển khai I18n Engine (Lưu Postgres, Cache Redis).
+- [x] **[Update 18/04]** API Orchestration: Điều hướng toàn bộ luồng gọi thông qua `v-r2h-api-gateway`.
+- [x] **[Update 18/04]** Hoàn thiện module quản trị **Policy Matrix** (Admin Exception Control).
+- [x] **[Update 18/04]** Triển khai I18n Engine (Lưu Postgres, Cache Redis).
+- [ ] **[Update 19/04]** Khởi tạo `v-r2h-proto`: Định nghĩa gRPC Services và Message Schema dùng chung (Git Submodule).
 
 ### Milestone 4: Core Engine (Rust)
 - [ ] Xây dựng Service điều khiển Docker API bằng Rust.
 
 ### Milestone 5: Billing & Payments (Node.js)
-- [ ] Triển khai tính toán tài nguyên và tích hợp Stripe.
+- [ ] Triển khai tính toán tài nguyên và tích hợp Stripe thanh toán.
 
 ---
 
 ## VII. Nhật ký thay đổi (Changelog)
+
+### [2026-04-18] - Microservice Architecture, Policy Refinement & gRPC Foundation
+- **Backend (Go):**
+    - Phân tách service `v-r2h-iam-gateway` thành bộ 3 microservices độc lập: `api-gateway`, `iam-service`, và `i18n-service`.
+    - Thiết lập Database/Redis per Service: Tách riêng instance cho IAM và I18N để đảm bảo tính cô lập dữ liệu.
+    - **v-r2h-proto Integration:** Triển khai Git Submodule chứa các định nghĩa gRPC (.proto), phục vụ giao tiếp Inter-service Communication hiệu suất cao.
+- **Frontend (Next.js):**
+    - Hoàn thiện tính năng I18n động, hỗ trợ đa ngôn ngữ từ backend.
+    - Phát triển trang 404 và module quản trị Policy Admin chuyên sâu.
+    - Cập nhật UI kết nối tập trung qua Gateway thay vì gọi trực tiếp IAM Service.
+- **Design & Document:**
+    - Hoàn thiện System Flow Design trên Figma/Drawio, định nghĩa rõ luồng đi của Request qua Gateway.
 
 ### [2026-04-13] - Security & Silent Refresh Flow
 - **Backend (Go):**
