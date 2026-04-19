@@ -8,7 +8,7 @@ This is the central documentation for the Mini-AWS Cloud Service project.
 - [IAM Service](https://github.com/vertex-r2h/v-r2h-iam-service) - Golang: Identity & Access Management, gRPC Server, RBAC Policy.
 - [I18n Service](https://github.com/vertex-r2h/v-r2h-i18n-service) - Golang: Dịch vụ đa ngôn ngữ, quản lý bản dịch & Cache Redis.
 - [Proto Contracts](https://github.com/vertex-r2h/v-r2h-proto) - gRPC: Git Submodule định nghĩa Schema và Service Interfaces dùng chung.
-- [Go Library](https://github.com/vertex-r2h/v-r2h-library) - Golang: Thư viện tiện ích (v0.0.5), Middleware & Common Helpers cho Go Services.
+- [Go SDK](https://github.com/vertex-r2h/v-r2h-library) - Golang: Thư viện tiện ích (v0.0.15), Middleware & Common Helpers cho Go Services.
 - [Infrastructure](https://github.com/vertex-r2h/v-r2h-infra) - Docker Compose: Isolated DB (Postgres), Multi-instance Redis & Nginx.
 - [Core Engine](https://github.com/vertex-r2h/v-r2h-core-engine) - Rust: Docker/VM Control API & Resource Monitoring.
 - [Business Backend](https://github.com/vertex-r2h/v-r2h-business-be) - Node.js: Billing, Stripe Integration & User Profile.
@@ -39,7 +39,7 @@ Xây dựng một hệ sinh thái Cloud Service thu nhỏ (Mini-AWS) bao gồm c
 | **v-r2h-iam-service** | **Golang** | Trái tim định danh: Quản lý xác thực, gRPC server cung cấp thông tin User/Policy cho Gateway. |
 | **v-r2h-i18n-service** | **Golang** | Quản lý đa ngôn ngữ: Lưu trữ bản dịch, cung cấp gRPC interface để tra cứu nội dung I18n nhanh chóng. |
 | **v-r2h-proto** | **gRPC / Proto** | **Communication Contract**: Định nghĩa các Service RPC và Message Models (Submodule dùng chung cho Go/Rust/Node). |
-| **v-r2h-library** | **Golang** | **Internal Helper**: Thư viện tiện ích cho Go, chứa middleware, logger, và wrapper xử lý mã lỗi từ Proto. |
+| **v-r2h-go-sdk** | **Golang** | **Internal Helper**: Thư viện tiện ích cho Go, chứa middleware, logger, và wrapper xử lý mã lỗi từ Proto. |
 | **v-r2h-core-engine** | **Rust** | Động cơ hệ thống: Kết nối gRPC client để nhận lệnh điều khiển Docker/VM API. |
 | **v-r2h-business-be** | **Node.js** | Nghiệp vụ: Quản lý Billing, Stripe và tích hợp Metadata qua gRPC tới IAM. |
 | **v-r2h-console-ui** | **Next.js** | Dashboard trung tâm: Quản trị hệ thống và Console người dùng. |
